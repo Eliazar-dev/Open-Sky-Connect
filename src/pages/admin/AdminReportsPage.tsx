@@ -1,0 +1,41 @@
+import { useState } from 'react';
+import { Dropdown, StatCardSkeleton } from '@/components/ui';
+import { StatCard } from '@/components/ui/StatCard';
+import { RevenueChart } from '@/components/charts/RevenueChart';
+import { useDashboardStats } from '@/hooks/useAdminData';
+import { formatCurrency } from '@/utils/format';
+
+const monthOptions = [
+  { label: 'This Month', value: 'this-month' },
+  { label: 'Last Month', value: 'last-month' },
+  { label: 'Last 3 Months', value: 'last-3-months' },
+];
+
+export function AdminReportsPage() {
+  const [month, setMonth] = useState('this-month');
+  const { data: stats, isLoading } = useDashboardStats();
+
+  return (
+    <div className="flex flex-col gap-6">
+      <div className="flex justify-end">
+        <Dropdown options={monthOptions} value={month} onChange={setMonth} className="w-40" />
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        {isLoading || !stats ? (
+          <>
+            <StatCardSkeleton />
+            <StatCardSkeleton />
+          </>
+        ) : (
+          <>
+            <StatCard label="Total Revenue" value={formatCurrency(stats.revenueThisMonth)} changePct={stats.revenueChangePct} />
+            <StatCard label="Total Customers" value={stats.totalCustomers.toLocaleString()} changePct={8} />
+          </>
+        )}
+      </div>
+
+      {stats && <RevenueChart data={stats.revenueOverview} />}
+    </div>
+  );
+}

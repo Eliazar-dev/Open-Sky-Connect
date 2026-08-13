@@ -1,0 +1,72 @@
+@import "tailwindcss";
+
+@theme {
+  /* Brand blue, sampled from the OpenSky Connect logo */
+  --color-brand-50: #eef7fd;
+  --color-brand-100: #d9edfa;
+  --color-brand-200: #b8def6;
+  --color-brand-300: #8bc9ef;
+  --color-brand-400: #5aade4;
+  --color-brand-500: #3690d6;
+  --color-brand-600: #2472b8;
+  --color-brand-700: #1f5c95;
+  --color-brand-800: #1e4d7a;
+  --color-brand-900: #1c4166;
+
+  /* Ink / navy for headings + logo wordmark */
+  --color-ink-900: #0b1730;
+  --color-ink-800: #101f3d;
+  --color-ink-700: #172a4d;
+
+  /* Neutral surfaces */
+  --color-surface: #f4f7fb;
+  --color-surface-alt: #eef2f7;
+
+  /* Status colors */
+  --color-success-50: #ecfdf3;
+  --color-success-500: #16a34a;
+  --color-success-600: #15803d;
+  --color-danger-50: #fef2f2;
+  --color-danger-500: #ef4444;
+  --color-danger-600: #dc2626;
+  --color-warning-50: #fffbeb;
+  --color-warning-500: #f59e0b;
+
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  --radius-card: 1rem;
+  --radius-control: 0.75rem;
+
+  --shadow-card: 0 1px 2px rgba(16, 31, 61, 0.04), 0 8px 24px rgba(16, 31, 61, 0.06);
+  --shadow-card-hover: 0 4px 12px rgba(16, 31, 61, 0.06), 0 12px 32px rgba(16, 31, 61, 0.10);
+  --shadow-float: 0 12px 40px rgba(16, 31, 61, 0.16);
+}
+
+@layer base {
+  * {
+    @apply border-slate-200;
+  }
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    @apply bg-surface text-slate-700 antialiased;
+    font-family: var(--font-sans);
+  }
+  h1, h2, h3, h4 {
+    @apply text-ink-900 font-semibold tracking-tight;
+  }
+  #root {
+    min-height: 100svh;
+  }
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}

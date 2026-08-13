@@ -1,0 +1,287 @@
+OpenConnect Admin Authentication API
+=====================================
+
+1. Register Admin
+-----------------
+Endpoint: POST /users/api/register/
+
+Payload:
+{
+    "name": "Admin Name",
+    "email": "admin@example.com",
+    "password": "yourpassword"
+}
+
+Response (201 Created):
+{
+    "message": "Registration successful! Please check your email to verify your account.",
+    "email": "admin@example.com"
+}
+
+Response (400 Bad Request) - Email already exists:
+{
+    "email": ["An admin with this email already exists."]
+}
+
+Response (400 Bad Request) - Validation error:
+{
+    "field_name": ["Error message"]
+}
+
+Note: A 6-digit verification code is sent to the email. The admin must verify email before logging in.
+
+
+2. Verify Email
+---------------
+Endpoint: POST /users/api/verify-email/
+
+Payload:
+{
+    "email": "admin@example.com",
+    "token": "123456"
+}
+
+Response (200 OK):
+{
+    "message": "Email verified successfully! You can now login.",
+    "email": "admin@example.com"
+}
+
+Response (400 Bad Request):
+{
+    "error": "Invalid or expired verification token"
+}
+
+Response (404 Not Found):
+{
+    "error": "Admin not found"
+}
+
+
+2.1 Resend Verification Token
+------------------------------
+Endpoint: POST /users/api/resend-verification/
+
+Payload:
+{
+    "email": "admin@example.com"
+}
+
+Response (200 OK):
+{
+    "message": "New verification code sent to your email."
+}
+
+Response (404 Not Found):
+{
+    "error": "Admin not found"
+}
+
+Response (400 Bad Request):
+{
+    "email": ["Enter a valid email address."]
+}
+
+Note: Use this if the admin did not receive or lost the original 6-digit verification email. A new token is generated and sent.
+
+
+3. Login (Request Token)
+------------------------
+Endpoint: POST /users/api/login/
+
+Payload:
+{
+    "email": "admin@example.com"
+}
+
+Response (200 OK):
+{
+    "message": "Token sent to your email"
+}
+
+Response (404 Not Found):
+{
+    "error": "Admin not found"
+}
+
+Response (400 Bad Request) - Email not verified:
+{
+    "error": "Please verify your email before logging in"
+}
+
+Response (400 Bad Request) - Validation error:
+{
+    "email": ["Enter a valid email address."]
+}
+
+Note: A 6-digit login token is sent to the admin's email. The token expires in 10 minutes.
+
+
+3.1 Resend Login Token
+-----------------------
+Endpoint: POST /users/api/resend-login-token/
+
+Payload:
+{
+    "email": "admin@example.com"
+}
+
+Response (200 OK):
+{
+    "message": "New login token sent to your email."
+}
+
+Response (404 Not Found):
+{
+    "error": "Admin not found"
+}
+
+Response (400 Bad Request) - Email not verified:
+{
+    "error": "Please verify your email before requesting a login token"
+}
+
+Response (400 Bad Request) - Validation error:
+{
+    "email": ["Enter a valid email address."]
+}
+
+Note: Use this if the admin did not receive or lost the original login token. A new token is generated and sent.
+
+
+4. Verify Login Token
+---------------------
+Endpoint: POST /users/api/verify-token/
+
+Payload:
+{
+    "email": "admin@example.com",
+    "token": "123456"
+}
+
+Response (200 OK):
+{
+    "message": "Login successful",
+    "email": "admin@example.com",
+    "name": "Admin Name",
+    "login_time": "2026-08-13 15:34:54",
+    "access_token": "generated_access_token_here",
+    "refresh_token": "generated_refresh_token_here"
+}
+
+Response (400 Bad Request):
+{
+    "error": "Invalid or expired token"
+}
+
+Response (404 Not Found):
+{
+    "error": "Admin not found"
+}
+
+Note: On successful verification, access_token and refresh_token are generated and returned along with login_time.
+
+
+5. Forgot Password
+------------------
+Endpoint: POST /users/api/forgot-password/
+
+Payload:
+{
+    "email": "admin@example.com"
+}
+
+Response (200 OK):
+{
+    "message": "Password reset token sent to your email."
+}
+
+Response (404 Not Found):
+{
+    "error": "No admin found with this email address."
+}
+
+Response (400 Bad Request):
+{
+    "email": ["Enter a valid email address."]
+}
+
+Note: A 6-digit reset code is sent to the admin's email. The code expires in 10 minutes.
+
+
+6. Reset Password
+-----------------
+Endpoint: POST /users/api/reset-password/
+
+Payload:
+{
+    "email": "admin@example.com",
+    "token": "123456",
+    "new_password": "newstrongpassword",
+    "confirm_password": "newstrongpassword"
+}
+
+Response (200 OK):
+{
+    "message": "Password reset successful! You can now login with your new password."
+}
+
+Response (400 Bad Request):
+{
+    "error": "Invalid or expired reset token."
+}
+
+Response (400 Bad Request):
+{
+    "new_password": ["Passwords do not match."]
+}
+
+Response (404 Not Found):
+{
+    "error": "Admin not found."
+}
+
+
+Web Pages
+---------
+Register Page:      GET /users/register/
+Login Page:         GET /users/login/
+Verify Email Page:  GET /users/verify-email/
+Verify Token Page:  GET /users/verify-token/
+Forgot Password:    GET /users/forgot-password/
+Reset Password:     GET /users/reset-password/
+
+
+Email Configuration
+-------------------
+Backend: SMTP (Gmail)
+Host: smtp.gmail.com
+Port: 587
+TLS: Enabled
+From Email: cascallensteve@gmail.com
+
+Environment variables used (loaded from .env):
+- EMAIL_HOST_USER
+- EMAIL_HOST_PASSWORD
+- DEFAULT_FROM_EMAIL
+
+Note: Emails are sent via Gmail SMTP. Ensure the Gmail account uses an App Password if 2FA is enabled.
+
+
+Database Configuration
+----------------------
+Engine: PostgreSQL
+Provider: Neon
+Connection: SSL required
+Host: ep-small-frost-axhpakkr-pooler.c-4.us-east-2.aws.neon.tech
+Port: 5432
+Database: neondb
+
+Environment variables used (loaded from .env):
+- DB_NAME
+- DB_USER
+- DB_PASSWORD
+- DB_HOST
+- DB_PORT
+
+Note: Ensure psycopg2-binary is installed and the DATABASES setting in settings.py uses the postgresql backend.
